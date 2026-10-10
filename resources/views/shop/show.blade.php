@@ -55,6 +55,18 @@
         </form>
     </div>
 </div>
+@if ($related->isNotEmpty())
+    <section class="mt-5">
+        <h2 class="h5 mb-3">You may also like</h2>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            @foreach ($related as $item)
+                <div class="col">
+                    <x-product-card :product="$item" />
+                </div>
+            @endforeach
+        </div>
+    </section>
+@endif
 @endsection
 
 @push('scripts')

@@ -8,7 +8,7 @@
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 <h1 class="h4 mb-4">Create an account</h1>
-                <form method="POST" action="{{ url('/register') }}" novalidate>
+                <form method="POST" action="{{ url('/register') }}" data-once novalidate>
                     @csrf
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>

@@ -34,7 +34,7 @@ class ProductRequest extends FormRequest
 
             // Images are mandatory only when creating; SVG is excluded on purpose (script injection risk).
             'images' => [$this->isMethod('POST') ? 'required' : 'nullable', 'array', 'max:8'],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048', 'dimensions:max_width=6000,max_height=6000'],
         ];
     }
 
@@ -59,6 +59,7 @@ class ProductRequest extends FormRequest
             'images.*.image' => 'Each file must be an image.',
             'images.*.mimes' => 'Images must be JPG, PNG or WebP.',
             'images.*.max' => 'Each image must be 2 MB or smaller.',
+            'images.*.dimensions' => 'Each image must be at most 6000 x 6000 pixels.',
             'variants.required' => 'Add at least one size and color variant.',
         ];
     }

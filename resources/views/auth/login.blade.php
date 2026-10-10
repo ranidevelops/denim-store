@@ -8,7 +8,7 @@
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 <h1 class="h4 mb-4">Login</h1>
-                <form method="POST" action="{{ url('/login') }}" novalidate>
+                <form method="POST" action="{{ url('/login') }}" data-once novalidate>
                     @csrf
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>

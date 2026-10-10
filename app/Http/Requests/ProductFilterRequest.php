@@ -30,6 +30,7 @@ class ProductFilterRequest extends FormRequest
             'max_price' => ['nullable', 'numeric', 'min:0', Rule::when($this->filled('min_price'), ['gte:min_price'])],
             'sort' => ['nullable', Rule::in(array_keys(self::SORTS))],
             'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
         ];
     }
 

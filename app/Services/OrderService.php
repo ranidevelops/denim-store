@@ -99,6 +99,37 @@ class OrderService
         });
     }
 
+    /**
+     * Turn API order lines (product + size + color + quantity) into variant id => quantity.
+     * Duplicate lines are merged. Stock itself is checked later, inside place().
+     *
+     * @param  list<array{product_id: int, size: string, color: string, quantity: int}>  $items
+     * @return array<int, int>
+     */
+    public function variantQuantities(array $items): array
+    {
+        $quantities = [];
+
+        foreach ($items as $index => $item) {
+            $variant = ProductVariant::query()
+                ->where('product_id', $item['product_id'])
+                ->where('size', $item['size'])
+                ->where('color', $item['color'])
+                ->whereHas('product', fn ($query) => $query->active())
+                ->first();
+
+            if (! $variant) {
+                throw ValidationException::withMessages([
+                    "items.{$index}.size" => 'That size and color is not available for this product.',
+                ]);
+            }
+
+            $quantities[$variant->id] = ($quantities[$variant->id] ?? 0) + (int) $item['quantity'];
+        }
+
+        return $quantities;
+    }
+
     private function generateOrderNumber(): string
     {
         do {

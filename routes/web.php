@@ -24,16 +24,16 @@ Route::delete('/cart', [CartController::class, 'clear'])->name('cart.clear');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1,login');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1,register');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 Route::middleware('auth')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:20,1,checkout')->name('checkout.store');
     Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');

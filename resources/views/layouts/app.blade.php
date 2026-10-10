@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="Jeans, jackets, shirts and shorts from Indigo &amp; Co. Denim.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%2314263f'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' fill='%23c9a24d' font-family='Georgia,serif'%3EI%3C/text%3E%3C/svg%3E">
     <title>@yield('title', 'Indigo & Co. Denim')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -24,6 +26,7 @@
     @stack('styles')
 </head>
 <body class="d-flex flex-column min-vh-100">
+    <a href="#main" class="visually-hidden-focusable position-absolute bg-white p-2 m-2 rounded" style="z-index:2000">Skip to content</a>
     <nav class="navbar navbar-expand-lg navbar-dark navbar-denim">
         <div class="container">
             <a class="navbar-brand brand" href="{{ route('home') }}">Indigo <span>&amp;</span> Co.</a>
@@ -55,9 +58,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('cart.index') }}">
                             Cart
-                            @if ($cartCount > 0)
-                                <span class="badge rounded-pill bg-warning text-dark">{{ $cartCount }}</span>
-                            @endif
+                            <span id="cart-badge" class="badge rounded-pill bg-warning text-dark {{ $cartCount > 0 ? '' : 'd-none' }}">{{ $cartCount }}</span>
                         </a>
                     </li>
                     @auth
@@ -81,7 +82,7 @@
         </div>
     </nav>
 
-    <main class="container py-4 flex-grow-1">
+    <main id="main" class="container py-4 flex-grow-1">
         @include('partials.alerts')
         @yield('content')
     </main>
@@ -91,6 +92,22 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Stops double submissions (e.g. placing an order twice) on forms marked data-once.
+        document.addEventListener('submit', (event) => {
+            const form = event.target;
+            if (!form.matches('form[data-once]') || event.defaultPrevented) return;
+            if (form.dataset.submitted) {
+                event.preventDefault();
+                return;
+            }
+            form.dataset.submitted = '1';
+            form.querySelectorAll('button[type="submit"]').forEach((button) => { button.disabled = true; });
+        });
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) window.location.reload();
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

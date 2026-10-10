@@ -25,30 +25,35 @@
     <div class="container-fluid">
         <div class="row min-vh-100">
             <aside class="col-md-3 col-lg-2 sidebar p-3 d-flex flex-column">
-                <a href="{{ route('admin.dashboard') }}" class="brand fs-5 mb-4 d-block">Indigo <span>&amp;</span> Admin</a>
-                <ul class="nav nav-pills flex-column gap-1 mb-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">Categories</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}" href="{{ route('admin.products.index') }}">Products</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}" href="{{ route('admin.orders.index') }}">Orders</a>
-                    </li>
-                </ul>
-                <hr class="border-secondary">
-                <a class="nav-link text-light small px-0" href="{{ route('home') }}">View storefront</a>
-                <form method="POST" action="{{ route('logout') }}" class="mt-2">
-                    @csrf
-                    <button class="btn btn-outline-light btn-sm w-100" type="submit">Logout</button>
-                </form>
+                <div class="d-flex justify-content-between align-items-center mb-md-4">
+                    <a href="{{ route('admin.dashboard') }}" class="brand fs-5">Indigo <span>&amp;</span> Admin</a>
+                    <button class="btn btn-outline-light btn-sm d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav" aria-controls="adminNav" aria-expanded="false" aria-label="Toggle menu">Menu</button>
+                </div>
+                <div class="collapse d-md-flex flex-column flex-grow-1 mt-3 mt-md-0" id="adminNav">
+                    <ul class="nav nav-pills flex-column gap-1 mb-auto">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">Categories</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}" href="{{ route('admin.products.index') }}">Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}" href="{{ route('admin.orders.index') }}">Orders</a>
+                        </li>
+                    </ul>
+                    <hr class="border-secondary">
+                    <a class="nav-link text-light small px-0" href="{{ route('home') }}">View storefront</a>
+                    <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                        @csrf
+                        <button class="btn btn-outline-light btn-sm w-100" type="submit">Logout</button>
+                    </form>
+                </div>
             </aside>
 
-            <main class="col-md-9 col-lg-10 p-4">
+            <main id="main" class="col-md-9 col-lg-10 p-4">
                 @include('partials.alerts')
                 @yield('content')
             </main>

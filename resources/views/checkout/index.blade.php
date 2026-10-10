@@ -7,7 +7,7 @@
 
 <div class="row g-4">
     <div class="col-lg-7">
-        <form method="POST" action="{{ route('checkout.store') }}" class="card border-0 shadow-sm" novalidate>
+        <form method="POST" action="{{ route('checkout.store') }}" class="card border-0 shadow-sm" data-once novalidate>
             @csrf
             <div class="card-body p-4">
                 <h2 class="h5 mb-3">Delivery details</h2>

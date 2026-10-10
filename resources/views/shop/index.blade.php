@@ -17,6 +17,13 @@
         </ul>
     </div>
 @endif
+@if ($errors->any())
+    <div class="alert alert-warning">
+        <ul class="mb-0 small">
+            @foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach
+        </ul>
+    </div>
+@endif
 
 <div class="row g-4">
     <aside class="col-lg-3">
@@ -85,7 +92,7 @@
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-denim btn-sm">Apply filters</button>
                         @if ($hasFilters)
-                            <a href="{{ route('products.index') }}" class="btn btn-outline-secondary btn-sm">Clear filters</a>
+                            <a href="{{ route('products.index') }}" id="clear-filters" class="btn btn-outline-secondary btn-sm js-clear-filters">Clear filters</a>
                         @endif
                     </div>
                 </div>
@@ -119,3 +126,101 @@
     </section>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Progressive enhancement: without JavaScript the form and links still work as normal page loads.
+    (() => {
+        const form = document.querySelector('#filters form');
+        const results = document.getElementById('results');
+        const errorBox = document.getElementById('filter-errors');
+        if (!form || !results) return;
+
+        const headers = { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
+        let currentUrl = window.location.href;
+
+        function buildUrl() {
+            const params = new URLSearchParams(new FormData(form));
+            [...params.keys()].forEach((key) => {
+                const value = params.get(key);
+                if (value === '' || (key === 'sort' && value === 'newest')) params.delete(key);
+            });
+            const query = params.toString();
+            return form.action + (query ? '?' + query : '');
+        }
+
+        function syncClearLink(hasFilters) {
+            let link = document.getElementById('clear-filters');
+            if (hasFilters && !link) {
+                link = document.createElement('a');
+                link.id = 'clear-filters';
+                link.href = form.action;
+                link.className = 'btn btn-outline-secondary btn-sm js-clear-filters';
+                link.textContent = 'Clear filters';
+                form.querySelector('.d-grid').appendChild(link);
+            } else if (!hasFilters && link) {
+                link.remove();
+            }
+        }
+
+        async function load(url, { push = true } = {}) {
+            if (url === currentUrl && push) return;
+            errorBox.innerHTML = '';
+            results.style.opacity = '.5';
+            results.setAttribute('aria-busy', 'true');
+
+            try {
+                const response = await fetch(url, { headers });
+                const data = await response.json();
+
+                if (response.status === 422) {
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-warning small';
+                    alert.textContent = Object.values(data.errors || {}).flat().join(' ') || data.message;
+                    errorBox.appendChild(alert);
+                    return;
+                }
+                if (!response.ok) throw new Error('Request failed');
+
+                results.innerHTML = data.html;
+                syncClearLink(data.has_filters);
+                document.querySelector('.hero')?.remove();
+                if (push) history.pushState({}, '', url);
+                currentUrl = url;
+            } catch (error) {
+                window.location.href = url; // fall back to a normal page load
+            } finally {
+                results.style.opacity = '1';
+                results.removeAttribute('aria-busy');
+            }
+        }
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            load(buildUrl());
+        });
+
+        form.addEventListener('change', (event) => {
+            if (event.target.matches('select, input[type="number"]')) load(buildUrl());
+        });
+
+        results.addEventListener('click', (event) => {
+            const link = event.target.closest('a.page-link');
+            if (!link) return;
+            event.preventDefault();
+            load(link.href);
+            results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.js-clear-filters')) return;
+            event.preventDefault();
+            form.querySelectorAll('input[type="search"], input[type="number"]').forEach((input) => { input.value = ''; });
+            form.querySelectorAll('select').forEach((select) => { select.selectedIndex = 0; });
+            load(form.action);
+        });
+
+        window.addEventListener('popstate', () => window.location.reload());
+    })();
+</script>
+@endpush

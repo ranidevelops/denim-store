@@ -100,6 +100,21 @@ class Product extends Model
         };
     }
 
+    /**
+     * Apply storefront/API filters in one place.
+     *
+     * @param  array<string, mixed>  $filters  search, category, size, color, min_price, max_price, sort
+     */
+    public function scopeFilteredBy(Builder $query, array $filters): Builder
+    {
+        return $query
+            ->search($filters['search'] ?? null)
+            ->inCategorySlug($filters['category'] ?? null)
+            ->availableIn($filters['size'] ?? null, $filters['color'] ?? null)
+            ->priceBetween($filters['min_price'] ?? null, $filters['max_price'] ?? null)
+            ->sortedBy($filters['sort'] ?? null);
+    }
+
     public function isInStock(): bool
     {
         return $this->variants->contains(fn (ProductVariant $variant) => $variant->stock > 0);

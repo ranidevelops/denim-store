@@ -15,7 +15,7 @@ class User extends Authenticatable
     // "role" is deliberately not fillable so it can never be set from a request.
     protected $fillable = ['name', 'email', 'password'];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'api_token'];
 
     protected function casts(): array
     {
