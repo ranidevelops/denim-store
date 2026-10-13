@@ -21,7 +21,7 @@
                         <td class="text-muted">{{ $category->slug }}</td>
                         <td class="text-center">{{ $category->products_count }}</td>
                         <td class="text-end">
-                            <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a href="{{ route('admin.categories.edit', ['category' => $category->id]) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                             <form method="POST" action="{{ route('admin.categories.destroy', $category) }}" class="d-inline"
                                   onsubmit="return confirm('Delete this category?');">
                                 @csrf
