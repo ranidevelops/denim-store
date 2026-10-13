@@ -18,6 +18,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
+        if (app()->environment('production') || env('APP_ENV') === 'production') {
+        URL::forceScheme('https');
+        }
+
         View::composer('layouts.app', function ($view) {
             $view->with('navCategories', Category::orderBy('name')->get(['id', 'name', 'slug']));
             $view->with('cartCount', array_sum(session('cart', [])));
